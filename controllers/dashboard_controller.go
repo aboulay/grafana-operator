@@ -647,7 +647,9 @@ func (r *GrafanaDashboardReconciler) GetOrCreateFolder(client *genapi.GrafanaHTT
 		title = cr.Spec.FolderTitle
 	}
 
-	exists, folderUID, err := r.GetFolderUID(client, title)
+	parentFolder := cr.Spec.ParentFolderUID
+
+	exists, folderUID, err := r.GetFolderUID(client, title, parentFolder)
 	if err != nil {
 		return "", err
 	}
@@ -659,6 +661,9 @@ func (r *GrafanaDashboardReconciler) GetOrCreateFolder(client *genapi.GrafanaHTT
 	// Folder wasn't found, let's create it
 	body := &models.CreateFolderCommand{
 		Title: title,
+	}
+	if parentFolder != "" {
+		body.ParentUID = parentFolder
 	}
 	resp, err := client.Folders.CreateFolder(body)
 	if err != nil {
@@ -675,6 +680,7 @@ func (r *GrafanaDashboardReconciler) GetOrCreateFolder(client *genapi.GrafanaHTT
 func (r *GrafanaDashboardReconciler) GetFolderUID(
 	client *genapi.GrafanaHTTPAPI,
 	title string,
+	parentFolderUID string,
 ) (bool, string, error) {
 	// Pre-existing folder that is not returned in Folder API
 	if strings.EqualFold(title, "General") {
@@ -684,6 +690,9 @@ func (r *GrafanaDashboardReconciler) GetFolderUID(
 	limit := int64(1000)
 	for {
 		params := folders.NewGetFoldersParams().WithPage(&page).WithLimit(&limit)
+		if parentFolderUID != "" {
+			params = params.WithParentUID(&parentFolderUID)
+		}
 		resp, err := client.Folders.GetFolders(params)
 		if err != nil {
 			return false, "", err

@@ -85,6 +85,10 @@ type GrafanaDashboardSpec struct {
 	// +optional
 	FolderTitle string `json:"folder,omitempty"`
 
+	// find parent folder for dashboard
+	// +optional
+	ParentFolderUID string `json:"parentFolderUID" validate:"omitempty,uuid4"`
+
 	// plugins
 	// +optional
 	Plugins PluginList `json:"plugins,omitempty"`
@@ -272,6 +276,10 @@ func (in *GrafanaDashboard) IsAllowCrossNamespaceImport() bool {
 		return *in.Spec.AllowCrossNamespaceImport
 	}
 	return false
+}
+
+func (in *GrafanaDashboard) IsInSubfolder() bool {
+	return in.Spec.ParentFolderUID != ""
 }
 
 func (in *GrafanaDashboard) IsUpdatedUID(uid string) bool {

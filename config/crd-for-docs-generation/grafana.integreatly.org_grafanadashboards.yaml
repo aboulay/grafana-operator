@@ -310,6 +310,9 @@ spec:
                 - fileName
                 - gzipJsonnetProject
                 type: object
+              parentFolderUID:
+                description: find parent folder for dashboard
+                type: string
               plugins:
                 description: plugins
                 items:
