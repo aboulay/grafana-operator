@@ -1125,6 +1125,13 @@ GrafanaDashboardSpec defines the desired state of GrafanaDashboard
         </td>
         <td>false</td>
       </tr><tr>
+        <td><b>parentFolderUID</b></td>
+        <td>string</td>
+        <td>
+          find parent folder for dashboard<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
         <td><b><a href="#grafanadashboardspecpluginsindex">plugins</a></b></td>
         <td>[]object</td>
         <td>
@@ -2470,6 +2477,13 @@ GrafanaFolderSpec defines the desired state of GrafanaFolder
         <td>boolean</td>
         <td>
           allow to import this resources from an operator in a different namespace<br/>
+        </td>
+        <td>false</td>
+      </tr><tr>
+        <td><b>parentFolderUID</b></td>
+        <td>string</td>
+        <td>
+          find parent folder where the folder will be created<br/>
         </td>
         <td>false</td>
       </tr><tr>

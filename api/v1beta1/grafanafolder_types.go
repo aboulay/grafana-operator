@@ -44,6 +44,10 @@ type GrafanaFolderSpec struct {
 	// +optional
 	AllowCrossNamespaceImport *bool `json:"allowCrossNamespaceImport,omitempty"`
 
+	// find parent folder where the folder will be created
+	// +optional
+	ParentFolderUID string `json:"parentFolderUID" validate:"omitempty,uuid4"`
+
 	// how often the folder is synced, defaults to 5m if not set
 	// +optional
 	// +kubebuilder:validation:Type=string
@@ -116,6 +120,10 @@ func (in *GrafanaFolder) IsAllowCrossNamespaceImport() bool {
 		return *in.Spec.AllowCrossNamespaceImport
 	}
 	return false
+}
+
+func (in *GrafanaFolder) IsInSubfolder() bool {
+	return in.Spec.ParentFolderUID != ""
 }
 
 func (in *GrafanaFolder) GetTitle() string {

@@ -64,6 +64,8 @@ spec:
                 x-kubernetes-validations:
                 - message: Value is immutable
                   rule: self == oldSelf
+              parentFolderUID:
+                type: string
               permissions:
                 type: string
               resyncPeriod:

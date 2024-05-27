@@ -290,6 +290,8 @@ func (r *GrafanaFolderReconciler) onFolderCreated(ctx context.Context, grafana *
 	title := cr.GetTitle()
 	uid := string(cr.UID)
 
+	parentFolder := cr.Spec.ParentFolderUID
+
 	grafanaClient, err := client2.NewGeneratedGrafanaClient(ctx, r.Client, grafana)
 	if err != nil {
 		return err
@@ -328,10 +330,14 @@ func (r *GrafanaFolderReconciler) onFolderCreated(ctx context.Context, grafana *
 			}
 		}
 	} else {
-		folderResp, err := grafanaClient.Folders.CreateFolder(&models.CreateFolderCommand{
+		body := &models.CreateFolderCommand{
 			Title: title,
 			UID:   uid,
-		})
+		}
+		if parentFolder != "" {
+			body.ParentUID = parentFolder
+		}
+		folderResp, err := grafanaClient.Folders.CreateFolder(body)
 		if err != nil {
 			return err
 		}
@@ -373,6 +379,9 @@ func (r *GrafanaFolderReconciler) Exists(client *genapi.GrafanaHTTPAPI, cr *graf
 	limit := int64(10000)
 	for {
 		params := folders.NewGetFoldersParams().WithPage(&page).WithLimit(&limit)
+		if cr.IsInSubfolder() {
+			params = params.WithParentUID(&cr.Spec.ParentFolderUID)
+		}
 		foldersResp, err := client.Folders.GetFolders(params)
 		if err != nil {
 			return false, "", err
